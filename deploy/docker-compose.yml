@@ -1,0 +1,41 @@
+# Self-hosted LiveSync backend (CouchDB) for Portainer Git stack.
+# Credentials come from Portainer stack env: COUCHDB_USER, COUCHDB_PASSWORD.
+# Config (CORS, auth, size limits) is applied once via REST and persists in livesync_couchdb_etc.
+services:
+  couchdb:
+    image: couchdb:latest
+    container_name: livesync-couchdb
+    restart: unless-stopped
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
+    volumes:
+      - livesync_couchdb_data:/opt/couchdb/data
+      - livesync_couchdb_etc:/opt/couchdb/etc/local.d
+    ports:
+      - "5984:5984"
+    networks:
+      - livesync-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u \"$$COUCHDB_USER:$$COUCHDB_PASSWORD\" http://localhost:5984/_up | grep -q ok || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+volumes:
+  livesync_couchdb_data:
+    name: livesync_couchdb_data
+  livesync_couchdb_etc:
+    name: livesync_couchdb_etc
+
+networks:
+  livesync-net:
+    driver: bridge
