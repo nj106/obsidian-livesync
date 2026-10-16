@@ -10,8 +10,7 @@ services:
     volumes:
       - livesync_cli_data:/data
       - livesync_vault:/vault
-    networks:
-      - livesync-cli-net
+    network_mode: bridge
     healthcheck:
       test: ["CMD-SHELL", "grep -q index.cjs /proc/1/cmdline || exit 1"]
       interval: 60s
@@ -32,7 +31,3 @@ volumes:
   livesync_vault:
     name: livesync_vault
     external: true
-
-networks:
-  livesync-cli-net:
-    driver: bridge
