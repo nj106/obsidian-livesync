@@ -3,10 +3,11 @@
 # Settings + local PouchDB live in livesync_cli_data (/data/settings.json, bootstrapped once from a Setup URI).
 services:
   livesync-cli:
-    # Pinned 2026-11-02: 1.0.44 (latest) crash-loops on the legacy runtime-state
-    # guard (unowned keyvalue-db.json) and its fetch cannot finalise here.
-    # Stay on 1.0.43-cli until a deliberate 1.0.44+ migration window.
-    image: ghcr.io/vrtmrz/livesync-cli:1.0.43-cli
+    # 2026-11-02: 1.0.44 initially crash-looped on its legacy runtime-state
+    # guard. The vault, local database, and CouchDB were verified identical,
+    # then cli-legacy-state-reviewed was set in the scoped runtime kv stores
+    # (human-reviewed reconstruction) and the daemon runs on latest again.
+    image: ghcr.io/vrtmrz/livesync-cli:latest
     container_name: livesync-cli
     restart: unless-stopped
     command: ["--settings", "/data/settings.json", "--vault", "/vault", "daemon"]
