@@ -3,7 +3,7 @@
 # Config (CORS, auth, size limits) is applied once via REST and persists in livesync_couchdb_etc.
 services:
   couchdb:
-    image: couchdb:3
+    image: couchdb:latest
     container_name: livesync-couchdb
     restart: unless-stopped
     environment:
